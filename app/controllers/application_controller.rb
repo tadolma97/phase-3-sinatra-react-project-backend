@@ -5,7 +5,8 @@ class ApplicationController < Sinatra::Base
   get "/phases/:id/popular" do
     phase = Phase.find(params[:id])
     popular=phase.posts.order("like DESC")
-    popular.to_json(include: :comments)
+    newPopular=popular.where('created_at BETWEEN ? AND ?', 1.days.ago.utc, Time.now.utc)
+    newPopular.to_json(include: :comments)
   end
 
   get "/phases/:id/oldest" do
@@ -14,10 +15,10 @@ class ApplicationController < Sinatra::Base
     oldest.to_json(include: :comments)
   end
 
-  get "/phases/:id/youngest" do
+  get "/phases/:id/newest" do
     phase = Phase.find(params[:id])
-    youngest=phase.posts.order("created_at ASC")
-    youngest.to_json(include: :comments)
+    newest=phase.posts.order("created_at DESC")
+    newest.to_json(include: :comments)
   end
 
   delete '/posts/:id' do
